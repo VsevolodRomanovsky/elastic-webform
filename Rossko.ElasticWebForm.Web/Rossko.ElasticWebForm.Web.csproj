@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>67d51050-a002-41ce-b92e-79e3b737258c</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="BlazorDateRangePicker" Version="4.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
+    <PackageReference Include="NEST" Version="7.13.2" />
+    <PackageReference Include="Syncfusion.Blazor.ProgressBar" Version="20.2.0.46" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rossko.ElasticWebForm.Application\Rossko.ElasticWebForm.Application.csproj" />
+    <ProjectReference Include="..\Rossko.ElasticWebForm.Common\Rossko.ElasticWebForm.Common.csproj" />
+    <ProjectReference Include="..\Rossko.ElasticWebForm.Data\Rossko.ElasticWebForm.Data.csproj" />
+  </ItemGroup>
+
+</Project>

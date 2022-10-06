@@ -1,0 +1,40 @@
+---
+version: '3.4'
+services:
+  web:
+    image: nexus.rossko.local:5000/microservice/elastic-web-form:${CONTAINER_TAG}
+    restart: always
+    environment:
+      - SERVICE_5000_NAME=elastic-web-form
+      - ASPNETCORE_URLS=http://*:5000
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+      - SERVICE_ENVIRONMENT=${ENVIRONMENT}
+    ports:
+      - target: 5000
+        mode: host
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: any
+        max_attempts: 10
+        delay: 5s
+        window: 120s
+      placement:
+        constraints: [node.role == worker]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/status"]
+      interval: 30s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+    networks:
+      - network
+    build:
+      dockerfile: Rossko.ElasticWebForm.Web/Dockerfile
+      context: .
+networks:
+  network:

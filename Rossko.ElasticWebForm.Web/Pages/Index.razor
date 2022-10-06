@@ -1,0 +1,90 @@
+﻿@page "/"
+
+<PageTitle>Fetch Elastic Data</PageTitle>
+@using Rossko.ElasticWebForm.Web.Data
+@using Rossko.ElasticWebForm.Web.Interfaces
+@using BlazorDateRangePicker
+@using Rossko.ElasticWebForm.Web.Services
+@using Syncfusion.Blazor.ProgressBar
+@inject IRequestService<OemCatalogRequest> FetchService
+@implements IDisposable
+@inject StateContainer StateContainer
+
+<h1>Fetch Elastic Data</h1>
+
+<EditForm Model="@_request" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <h3>Поле Event</h3>
+    <InputText id="event" @bind-Value="_request.Event" DisplayName="Поле Event" />
+    <br />
+    <h3>Диапазон дат</h3>
+    <DateRangePicker @bind-StartDate="_request.StartDate" @bind-EndDate="_request.EndDate" Culture="@(System.Globalization.CultureInfo.GetCultureInfo("ru-RU"))" />
+    <br />
+    <button type="submit" disabled="@_loadingFlag">Найти</button>
+    <br />
+
+    <SfProgressBar Value="@_importCount" IsActive="true" Minimum="0" Maximum="@_totalCount" TrackThickness="12" ProgressThickness="12">
+        <ProgressBarAnimation Enable="true"></ProgressBarAnimation>
+    </SfProgressBar>
+</EditForm>
+
+
+    @if (_loadingFlag)
+    {
+
+        <p><em>Загрузка...</em></p>
+    }
+
+<h2>Кол-во записей найденых по фильтру: @_totalCount</h2>
+<h2>Кол-во загруженных записей: @_importCount</h2>
+
+@code {
+
+    private bool _loadingFlag;
+    private long _totalCount;
+    private long _importCount;
+    private OemCatalogRequest _request = new();
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        StateHasChanged();
+    }
+
+    //TODO: отображение статистики
+    //private async Task HandleValidSubmit2()
+    //{
+    //    await FetchService.TestAgg(_request);
+    //}
+
+    private async Task HandleValidSubmit()
+    {
+        _loadingFlag = true;
+
+        var val = await Task.Run(() => FetchService.GetCountAsync(_request));
+        _totalCount = val.Count;
+        _importCount = 0;
+        StateHasChanged();
+        
+        var result = await FetchService.GetAsync(_request);
+
+        foreach (var item in result)
+        {
+            await FetchService.ImportAsync(item);
+            _importCount += item.Count;
+            StateHasChanged();
+        }
+
+        _loadingFlag = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+}
